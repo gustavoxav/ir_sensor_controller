@@ -1,0 +1,20 @@
+{
+  "name": "iot-occupancy-backend",
+  "version": "1.0.0",
+  "description": "Backend do sistema IoT de monitoramento de ocupação e controle de iluminação",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": ["iot", "mqtt", "occupancy", "esp32"],
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mqtt": "^5.10.4",
+    "socket.io": "^4.8.1"
+  }
+}
