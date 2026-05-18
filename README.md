@@ -1,10 +1,10 @@
-# 🏢 Sistema IoT de Monitoramento de Ocupação e Controle Inteligente de Iluminação
+# Sistema IoT de Monitoramento de Ocupação e Controle Inteligente de Iluminação
 
 Sistema completo de IoT para monitoramento de ocupação e automação de iluminação em tempo real, integrando ESP32, MQTT, backend Node.js, banco de dados SQLite e dashboard Next.js.
 
 ---
 
-## 📋 Índice
+## Índice
 
 - [Visão Geral](#visão-geral)
 - [Arquitetura](#arquitetura)
@@ -19,7 +19,7 @@ Sistema completo de IoT para monitoramento de ocupação e automação de ilumin
 
 ---
 
-## 🎯 Visão Geral
+## Visão Geral
 
 O sistema identifica quantas pessoas existem dentro de uma sala utilizando sensores infravermelhos conectados a um ESP32:
 
@@ -29,7 +29,7 @@ O sistema identifica quantas pessoas existem dentro de uma sala utilizando senso
 
 ---
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 ```
 [Sensores IR A/B]
@@ -45,7 +45,7 @@ O sistema identifica quantas pessoas existem dentro de uma sala utilizando senso
 
 ---
 
-## 📁 Estrutura de Pastas
+## Estrutura de Pastas
 
 ```
 IOT/
@@ -79,7 +79,7 @@ IOT/
 
 ---
 
-## 🔧 Hardware
+## Hardware
 
 ### Componentes Necessários
 
@@ -117,7 +117,7 @@ ESP32 DevKit
 
 ---
 
-## 📦 Instalação
+## Instalação
 
 ### Pré-requisitos
 
@@ -172,7 +172,7 @@ npm install
 
 ---
 
-## 🚀 Execução
+## Execução
 
 ### Ordem de Inicialização
 
@@ -212,7 +212,7 @@ Acesse: **http://localhost:3001** (ou a porta indicada pelo Next.js)
 
 ---
 
-## 🔌 API REST
+## API REST
 
 Base URL: `http://localhost:3000/api`
 
@@ -281,7 +281,7 @@ mosquitto_sub -t "sala/+/ocupacao" -v
 
 ---
 
-## 🖥️ Dashboard
+## Dashboard
 
 ### Funcionalidades
 
@@ -296,7 +296,7 @@ mosquitto_sub -t "sala/+/ocupacao" -v
 
 ---
 
-## ❓ Solução de Problemas
+## Solução de Problemas
 
 ### Backend não conecta ao MQTT
 
@@ -323,6 +323,6 @@ mosquitto_sub -t "sala/+/ocupacao" -v
 
 ---
 
-## 📄 Licença
+## Licença
 
 Projeto acadêmico — Faculdade IoT
