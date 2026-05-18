@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+/* ============================================
+   DESIGN SYSTEM - IoT Occupancy Dashboard
+   ============================================
+   Tailwind CSS v4 com suporte a dark/light mode
+   via classe "dark" no <html>
+*/
+
+/* ========================
+   CUSTOM THEME
+   ======================== */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-border: var(--card-border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+
+  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
+
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-slide-up: slide-up 0.4s ease-out;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+  --animate-glow: glow 2s ease-in-out infinite;
+}
+
+/* ========================
+   LIGHT MODE (default)
+   ======================== */
+
+:root {
+  --background: #f0f4f8;
+  --foreground: #1a202c;
+  --card: #ffffff;
+  --card-border: #e2e8f0;
+  --muted: #f7fafc;
+  --muted-foreground: #718096;
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+  --accent: #8b5cf6;
+  --accent-foreground: #ffffff;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+}
+
+/* ========================
+   DARK MODE
+   ======================== */
+
+.dark {
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+  --card: #1e293b;
+  --card-border: #334155;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --primary: #818cf8;
+  --primary-foreground: #0f172a;
+  --accent: #a78bfa;
+  --accent-foreground: #0f172a;
+  --success: #34d399;
+  --danger: #f87171;
+  --warning: #fbbf24;
+}
+
+/* ========================
+   BASE STYLES
+   ======================== */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ========================
+   ANIMATIONS
+   ======================== */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+  }
+}
+
+/* ========================
+   SCROLLBAR STYLING
+   ======================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ========================
+   UTILITY CLASSES
+   ======================== */
+
+.glass-card {
+  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--card) 80%, transparent);
+  border: 1px solid var(--card-border);
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-on {
+  background-color: var(--success);
+  animation: glow 2s ease-in-out infinite;
+}
+
+.status-off {
+  background-color: var(--danger);
+  opacity: 0.6;
+}
