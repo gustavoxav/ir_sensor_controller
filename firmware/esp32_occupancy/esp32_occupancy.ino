@@ -31,6 +31,13 @@
 #include <time.h>
 
 // ========================
+// MODO DE TESTE LOCAL
+// ========================
+// Defina como 1 para testar a lógica física (sensores + LED) no Serial Monitor
+// sem precisar de Wi-Fi ou MQTT. Mude para 0 para ativar a comunicação online.
+#define TEST_LOCAL_ONLY 1
+
+// ========================
 // CONFIGURAÇÕES DO SISTEMA
 // ========================
 
@@ -44,9 +51,11 @@ const char* WIFI_PASSWORD = "";  // Insira a senha da sua rede Wi-Fi
 
 // --- Broker MQTT ---
 // Insira o endereço do seu broker MQTT (ex: "192.168.1.100" ou "broker.hivemq.com")
-const char* MQTT_BROKER   = "";
-const int   MQTT_PORT     = 1883;
+const char* MQTT_BROKER   = "200.143.224.99";
+const int   MQTT_PORT     = 1183;
 const char* MQTT_CLIENT   = "esp32_sala_" ROOM_ID;
+const char* MQTT_USER     = "AlunosIOT";   // Login do broker do laboratório de redes
+const char* MQTT_PASS     = "Brok3rIoT";   // Senha do broker do laboratório de redes
 
 // --- Tópico MQTT ---
 // Formato: sala/{room_id}/ocupacao
@@ -179,7 +188,8 @@ void reconnect_mqtt() {
   while (!mqttClient.connected() && attempts < 5) {
     debugPrintf("Tentativa %d de conexão MQTT...\n", attempts + 1);
 
-    if (mqttClient.connect(MQTT_CLIENT)) {
+    // Conectar usando as credenciais do broker (Username e Password)
+    if (mqttClient.connect(MQTT_CLIENT, MQTT_USER, MQTT_PASS)) {
       debugPrint("MQTT conectado com sucesso!");
       debugPrintf("Tópico: %s\n", MQTT_TOPIC.c_str());
     } else {
@@ -277,9 +287,12 @@ int detectarMovimento() {
         lastEventTime = now;
         debugPrint("[EVENT] ENTRADA detectada! (A → B)");
       } else if (!sensorA && !sensorB) {
-        // Ambos limpos sem completar sequência
+        // Para sensores fisicamente espaçados no teste local, não limpamos imediatamente.
+        // O timeout de sequência (SEQUENCE_TIMEOUT) se encarregará de resetar.
+        #if !TEST_LOCAL_ONLY
         currentState = IDLE;
         debugPrint("[STATE] SAW_A → IDLE (sem sequência)");
+        #endif
       }
       break;
 
@@ -291,9 +304,12 @@ int detectarMovimento() {
         lastEventTime = now;
         debugPrint("[EVENT] SAÍDA detectada! (B → A)");
       } else if (!sensorA && !sensorB) {
-        // Ambos limpos sem completar sequência
+        // Para sensores fisicamente espaçados no teste local, não limpamos imediatamente.
+        // O timeout de sequência (SEQUENCE_TIMEOUT) se encarregará de resetar.
+        #if !TEST_LOCAL_ONLY
         currentState = IDLE;
         debugPrint("[STATE] SAW_B → IDLE (sem sequência)");
+        #endif
       }
       break;
 
@@ -413,12 +429,16 @@ void setup() {
   debugPrintf("  Sensor A: GPIO %d\n", SENSOR_A_PIN);
   debugPrintf("  Sensor B: GPIO %d\n", SENSOR_B_PIN);
 
-  // Conectar Wi-Fi
+  // Conectar Wi-Fi e MQTT (somente se não estiver em modo de teste local)
+#if !TEST_LOCAL_ONLY
   setup_wifi();
 
   // Configurar MQTT
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
   reconnect_mqtt();
+#else
+  debugPrint("[TESTE] Modo local ativo! Sensores e LED funcionando offline.");
+#endif
 
   debugPrint("");
   debugPrint("[SETUP] Sistema pronto!");
@@ -433,6 +453,7 @@ void setup() {
 // ========================
 
 void loop() {
+#if !TEST_LOCAL_ONLY
   // Manter conexão MQTT ativa
   if (!mqttClient.connected()) {
     reconnect_mqtt();
@@ -444,6 +465,7 @@ void loop() {
     debugPrint("[WIFI] Conexão perdida. Reconectando...");
     setup_wifi();
   }
+#endif
 
   // Detectar movimento
   int direction = detectarMovimento();
@@ -451,7 +473,11 @@ void loop() {
   // Atualizar estado e publicar se houve mudança
   if (atualizarEstado(direction)) {
     const char* event = (direction == 1) ? "entrada" : "saida";
+#if !TEST_LOCAL_ONLY
     publicarMQTT(event);
+#else
+    debugPrintf("[LOCAL] Ocupação: %d | LED: %s | Evento: %s\n", occupancyCount, ledState ? "ON" : "OFF", event);
+#endif
   }
 
   // Pequeno delay para estabilidade
