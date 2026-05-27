@@ -1,18 +1,5 @@
 "use client";
 
-/**
- * ============================================
- *  DASHBOARD PRINCIPAL
- *  IoT Occupancy Monitoring System
- * ============================================
- *
- * Página principal do dashboard que:
- * - Conecta ao backend via Socket.IO
- * - Busca dados iniciais via REST API
- * - Atualiza em tempo real com eventos de ocupação
- * - Exibe cards de sala, gráfico e tabela de eventos
- */
-
 import { useState, useEffect, useCallback } from "react";
 import { io } from "socket.io-client";
 import Header from "./components/Header";
@@ -20,28 +7,21 @@ import RoomCard from "./components/RoomCard";
 import OccupancyChart from "./components/OccupancyChart";
 import EventTable from "./components/EventTable";
 
-// URL do backend (ajustar conforme necessário)
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
 
 export default function Dashboard() {
-  // Estado
   const [rooms, setRooms] = useState([]);
   const [events, setEvents] = useState([]);
   const [history, setHistory] = useState([]);
   const [connected, setConnected] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
 
-  /**
-   * Busca os dados iniciais via REST API
-   */
   const fetchInitialData = useCallback(async () => {
     try {
-      // Buscar salas
       const roomsRes = await fetch(`${BACKEND_URL}/api/rooms`);
       const roomsData = await roomsRes.json();
       if (roomsData.success) {
         setRooms(roomsData.data);
-        // Selecionar primeira sala automaticamente
         if (roomsData.data.length > 0 && !selectedRoom) {
           setSelectedRoom(roomsData.data[0].room);
         }
@@ -51,9 +31,6 @@ export default function Dashboard() {
     }
   }, [selectedRoom]);
 
-  /**
-   * Busca eventos de uma sala específica
-   */
   const fetchRoomEvents = useCallback(async (roomId) => {
     try {
       const res = await fetch(`${BACKEND_URL}/api/rooms/${roomId}/events?limit=30`);
@@ -66,9 +43,6 @@ export default function Dashboard() {
     }
   }, []);
 
-  /**
-   * Busca histórico para o gráfico
-   */
   const fetchHistory = useCallback(async (roomId) => {
     try {
       const res = await fetch(`${BACKEND_URL}/api/rooms/${roomId}/history?limit=50`);
@@ -81,14 +55,9 @@ export default function Dashboard() {
     }
   }, []);
 
-  /**
-   * Efeito principal: Socket.IO + fetch inicial
-   */
   useEffect(() => {
-    // Buscar dados iniciais
     fetchInitialData();
 
-    // Conectar Socket.IO
     const socket = io(BACKEND_URL, {
       transports: ["websocket", "polling"],
       reconnectionAttempts: Infinity,
@@ -105,7 +74,6 @@ export default function Dashboard() {
       setConnected(false);
     });
 
-    // Receber estado inicial ao conectar
     socket.on("initial-state", (data) => {
       console.log("[WS] Estado inicial recebido:", data);
       if (data && data.length > 0) {
@@ -116,11 +84,9 @@ export default function Dashboard() {
       }
     });
 
-    // Receber atualizações em tempo real
     socket.on("occupancy-update", (data) => {
       console.log("[WS] Atualização recebida:", data);
 
-      // Atualizar estado da sala
       setRooms((prevRooms) => {
         const existingIndex = prevRooms.findIndex((r) => r.room === data.room);
         const updatedRoom = {
@@ -140,7 +106,6 @@ export default function Dashboard() {
         }
       });
 
-      // Adicionar ao topo dos eventos
       setEvents((prevEvents) => {
         const newEvent = {
           id: data.id || Date.now(),
@@ -153,7 +118,6 @@ export default function Dashboard() {
         return [newEvent, ...prevEvents].slice(0, 30);
       });
 
-      // Adicionar ao histórico do gráfico
       setHistory((prevHistory) => {
         const newPoint = {
           people_count: data.people_count,
@@ -163,15 +127,11 @@ export default function Dashboard() {
       });
     });
 
-    // Cleanup
     return () => {
       socket.disconnect();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /**
-   * Quando a sala selecionada muda, buscar seus dados
-   */
   useEffect(() => {
     if (selectedRoom) {
       fetchRoomEvents(selectedRoom);
@@ -181,12 +141,9 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
       <Header connected={connected} />
 
-      {/* Conteúdo Principal */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        {/* Estatísticas Rápidas */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <div className="glass-card rounded-xl p-4 text-center animate-slide-up">
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Salas</p>
@@ -212,7 +169,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Cards de Salas */}
         <section className="mb-8">
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
             Salas Monitoradas
@@ -243,14 +199,12 @@ export default function Dashboard() {
           )}
         </section>
 
-        {/* Gráfico + Tabela */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <OccupancyChart history={history} />
           <EventTable events={events} />
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="py-4 text-center text-xs text-muted-foreground border-t border-card-border">
         IoT Occupancy Dashboard • ESP32 + MQTT + Node.js + Next.js
       </footer>

@@ -1,9 +1,5 @@
 "use client";
 
-/**
- * EventTable - Tabela de eventos recentes
- */
-
 export default function EventTable({ events = [] }) {
   const formatDateTime = (timestamp) => {
     if (!timestamp) return "—";
@@ -36,7 +32,7 @@ export default function EventTable({ events = [] }) {
           {events.length} evento(s)
         </span>
       </div>
-      <div className="overflow-x-auto rounded-xl">
+      <div className="overflow-x-auto rounded-xl max-h-[300px]">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-card-border">

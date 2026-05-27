@@ -1,12 +1,5 @@
 "use client";
 
-/**
- * Header - Cabeçalho do dashboard
- *
- * Exibe o título do sistema, indicador de conexão
- * WebSocket e toggle de tema dark/light.
- */
-
 import ThemeToggle from "./ThemeToggle";
 
 export default function Header({ connected }) {
@@ -14,9 +7,7 @@ export default function Header({ connected }) {
     <header className="sticky top-0 z-50 glass-card border-b border-card-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo e Título */}
           <div className="flex items-center gap-3">
-            {/* Ícone IoT */}
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
               <svg
                 className="w-6 h-6 text-white"
@@ -42,21 +33,17 @@ export default function Header({ connected }) {
             </div>
           </div>
 
-          {/* Status + Theme Toggle */}
           <div className="flex items-center gap-4">
-            {/* Indicador de Conexão */}
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card border border-card-border">
               <span
-                className={`status-indicator ${
-                  connected ? "status-on" : "status-off"
-                }`}
+                className={`status-indicator ${connected ? "status-on" : "status-off"
+                  }`}
               />
               <span className="text-xs font-medium text-muted-foreground">
                 {connected ? "Conectado" : "Desconectado"}
               </span>
             </div>
 
-            {/* Toggle de Tema */}
             <ThemeToggle />
           </div>
         </div>

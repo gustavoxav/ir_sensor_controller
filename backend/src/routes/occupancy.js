@@ -1,8 +1,4 @@
 /**
- * ============================================
- *  ROTAS REST API - Ocupação
- * ============================================
- *
  * Endpoints para consulta de dados de ocupação.
  *
  * Rotas:

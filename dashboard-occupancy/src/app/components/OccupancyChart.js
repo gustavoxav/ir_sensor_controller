@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * OccupancyChart - Gráfico temporal de ocupação
- *
- * Exibe um gráfico de área com a ocupação ao longo
- * do tempo utilizando Recharts.
- */
 
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
@@ -13,7 +7,6 @@ import {
 } from "recharts";
 
 export default function OccupancyChart({ history = [] }) {
-  // Preparar dados para o gráfico
   const chartData = history.map((item) => {
     let timeLabel = "";
     try {
@@ -31,7 +24,6 @@ export default function OccupancyChart({ history = [] }) {
     };
   });
 
-  // Tooltip customizado
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (

@@ -9,7 +9,7 @@
  *   3. MQTT Client (consumir mensagens do ESP32)
  *   4. SQLite (banco de dados local)
  *
- * Porta padrão: 3000
+ * Porta padrão: 3001
  */
 
 // Carregar variáveis de ambiente
@@ -18,29 +18,16 @@ require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
-
-// Módulos internos
 const { initSocket } = require('./websocket/socket');
 const { initMQTT } = require('./mqtt/client');
 const occupancyRoutes = require('./routes/occupancy');
 
-// ========================
-// CONFIGURAÇÃO
-// ========================
-
-const PORT = process.env.PORT || 3000;
-
-// Inicializar Express
+const PORT = process.env.PORT || 3001;
 const app = express();
 
-// Middlewares
-app.use(cors());                    // Permitir requisições cross-origin
-app.use(express.json());            // Parse de JSON
+app.use(cors());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// ========================
-// ROTAS
-// ========================
 
 // Rota de saúde do servidor
 app.get('/api/health', (req, res) => {
@@ -62,14 +49,9 @@ app.use((req, res) => {
   });
 });
 
-// ========================
-// SERVIDOR HTTP + SOCKET.IO
-// ========================
 
 // Criar servidor HTTP (compartilhado entre Express e Socket.IO)
 const server = http.createServer(app);
-
-// Inicializar Socket.IO
 const io = initSocket(server);
 
 // ========================
@@ -78,10 +60,6 @@ const io = initSocket(server);
 
 // Inicializar cliente MQTT (passa Socket.IO para emitir eventos)
 const mqttClient = initMQTT(io);
-
-// ========================
-// INICIAR SERVIDOR
-// ========================
 
 server.listen(PORT, () => {
   console.log('');
@@ -103,10 +81,6 @@ server.listen(PORT, () => {
   console.log(`  GET /api/health             → Saúde do servidor`);
   console.log('');
 });
-
-// ========================
-// GRACEFUL SHUTDOWN
-// ========================
 
 process.on('SIGINT', () => {
   console.log('\n[SERVER] Encerrando servidor...');

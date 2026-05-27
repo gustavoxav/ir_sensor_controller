@@ -1,16 +1,3 @@
-/**
- * ============================================
- *  WEBSOCKET - Socket.IO
- * ============================================
- *
- * Configura o servidor Socket.IO para comunicação
- * em tempo real com o dashboard.
- *
- * Eventos emitidos:
- *   - occupancy-update: novo evento de ocupação
- *   - initial-state: estado atual ao conectar
- */
-
 const { Server } = require('socket.io');
 const EventModel = require('../models/event');
 const { getRoomStates } = require('../mqtt/client');
@@ -23,30 +10,22 @@ const { getRoomStates } = require('../mqtt/client');
 function initSocket(httpServer) {
   const io = new Server(httpServer, {
     cors: {
-      origin: '*',  // Em produção, restringir ao domínio do dashboard
+      origin: '*',
       methods: ['GET', 'POST']
     }
   });
 
-  // ========================
-  // EVENTOS DE CONEXÃO
-  // ========================
-
   io.on('connection', (socket) => {
     console.log(`[WS] Cliente conectado: ${socket.id}`);
 
-    // Enviar estado atual de todas as salas ao conectar
     try {
       const rooms = EventModel.getAllRooms();
       const memoryStates = getRoomStates();
 
-      // Priorizar dados em memória (mais atuais), com fallback para banco
       const currentState = rooms.map(dbRoom => {
         const memRoom = memoryStates.find(m => m.room === dbRoom.room);
         return memRoom || dbRoom;
       });
-
-      // Adicionar salas que estão só na memória (ainda sem histórico)
       memoryStates.forEach(memRoom => {
         if (!currentState.find(r => r.room === memRoom.room)) {
           currentState.push(memRoom);
@@ -59,7 +38,6 @@ function initSocket(httpServer) {
       console.error('[WS] Erro ao enviar estado inicial:', error.message);
     }
 
-    // Listener para requisições de histórico
     socket.on('request-history', (data) => {
       try {
         const { room, limit } = data;

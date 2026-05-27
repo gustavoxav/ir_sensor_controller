@@ -1,19 +1,11 @@
 "use client";
 
-/**
- * ThemeToggle - Botão para alternar entre dark e light mode
- *
- * Persiste a preferência no localStorage e aplica a classe
- * 'dark' no elemento <html>.
- */
-
 import { useState, useEffect } from "react";
 
 export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Sincronizar com o estado atual do DOM
   useEffect(() => {
     setMounted(true);
     const html = document.documentElement;
@@ -35,7 +27,6 @@ export default function ThemeToggle() {
     setIsDark(newIsDark);
   };
 
-  // Evitar hydration mismatch
   if (!mounted) {
     return (
       <button className="w-10 h-10 rounded-xl bg-card border border-card-border flex items-center justify-center" aria-label="Alternar tema">
@@ -54,7 +45,6 @@ export default function ThemeToggle() {
       title={isDark ? "Modo claro" : "Modo escuro"}
     >
       {isDark ? (
-        // Ícone Sol (light mode)
         <svg
           className="w-5 h-5 text-warning"
           fill="none"
@@ -69,7 +59,6 @@ export default function ThemeToggle() {
           />
         </svg>
       ) : (
-        // Ícone Lua (dark mode)
         <svg
           className="w-5 h-5 text-primary"
           fill="none"

@@ -1,8 +1,4 @@
 /**
- * ============================================
- *  CLIENTE MQTT
- * ============================================
- *
  * Conecta ao broker MQTT, consome mensagens do
  * tópico de ocupação, valida payloads e persiste
  * eventos no banco de dados.
@@ -13,7 +9,6 @@
 const mqtt = require('mqtt');
 const EventModel = require('../models/event');
 
-// Armazena o estado atual de cada sala em memória
 const roomStates = new Map();
 
 /**
@@ -21,26 +16,22 @@ const roomStates = new Map();
  * @param {Object} io - Instância do Socket.IO para emitir eventos
  */
 function initMQTT(io) {
-  const brokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://localhost:1883';
+  const brokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://200.143.224.99:1183';
   const topic = process.env.MQTT_TOPIC || 'sala/+/ocupacao';
 
   console.log('[MQTT] Conectando ao broker:', brokerUrl);
 
   const client = mqtt.connect(brokerUrl, {
     clientId: `backend_occupancy_${Date.now()}`,
+    username: process.env.MQTT_USER,
+    password: process.env.MQTT_PASS,
     clean: true,
     connectTimeout: 10000,
-    reconnectPeriod: 5000  // Reconexão automática a cada 5s
+    reconnectPeriod: 5000
   });
-
-  // ========================
-  // EVENTOS DE CONEXÃO
-  // ========================
 
   client.on('connect', () => {
     console.log('[MQTT] ✓ Conectado ao broker com sucesso!');
-
-    // Subscribe ao tópico (wildcard + para múltiplas salas)
     client.subscribe(topic, { qos: 1 }, (err) => {
       if (err) {
         console.error('[MQTT] Erro ao subscrever:', err.message);
@@ -61,10 +52,6 @@ function initMQTT(io) {
   client.on('close', () => {
     console.log('[MQTT] Conexão fechada');
   });
-
-  // ========================
-  // PROCESSAMENTO DE MENSAGENS
-  // ========================
 
   client.on('message', (receivedTopic, message) => {
     console.log(`[MQTT] Mensagem recebida em: ${receivedTopic}`);

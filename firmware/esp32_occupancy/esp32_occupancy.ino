@@ -21,8 +21,6 @@
  *    - Tópico: sala/{ROOM_ID}/ocupacao
  *    - Payload: JSON
  *
- *  Baseado no padrão do arquivo de referência:
- *    ESP32_ToF_Bathroom_Sensor_V3_Share.ino
  * ============================================================
  */
 
@@ -30,32 +28,27 @@
 #include <PubSubClient.h>
 #include <time.h>
 
-// ========================
-// MODO DE TESTE LOCAL
-// ========================
 // Defina como 1 para testar a lógica física (sensores + LED) no Serial Monitor
 // sem precisar de Wi-Fi ou MQTT. Mude para 0 para ativar a comunicação online.
-#define TEST_LOCAL_ONLY 1
+#define TEST_LOCAL_ONLY 0
 
 // ========================
 // CONFIGURAÇÕES DO SISTEMA
 // ========================
 
 // --- Identificação da Sala ---
-// Altere este valor para cada ESP32/sala diferente
 #define ROOM_ID "101"
 
 // --- Wi-Fi ---
-const char* WIFI_SSID     = "";  // Insira o nome da sua rede Wi-Fi
-const char* WIFI_PASSWORD = "";  // Insira a senha da sua rede Wi-Fi
+const char* WIFI_SSID     = "LabReDeS";
+const char* WIFI_PASSWORD = "cefetfriburgo";
 
 // --- Broker MQTT ---
-// Insira o endereço do seu broker MQTT (ex: "192.168.1.100" ou "broker.hivemq.com")
 const char* MQTT_BROKER   = "200.143.224.99";
 const int   MQTT_PORT     = 1183;
 const char* MQTT_CLIENT   = "esp32_sala_" ROOM_ID;
-const char* MQTT_USER     = "AlunosIOT";   // Login do broker do laboratório de redes
-const char* MQTT_PASS     = "Brok3rIoT";   // Senha do broker do laboratório de redes
+const char* MQTT_USER     = "AlunosIOT";
+const char* MQTT_PASS     = "Brok3rIoT";
 
 // --- Tópico MQTT ---
 // Formato: sala/{room_id}/ocupacao
@@ -286,13 +279,6 @@ int detectarMovimento() {
         currentState = WAIT_CLEAR;
         lastEventTime = now;
         debugPrint("[EVENT] ENTRADA detectada! (A → B)");
-      } else if (!sensorA && !sensorB) {
-        // Para sensores fisicamente espaçados no teste local, não limpamos imediatamente.
-        // O timeout de sequência (SEQUENCE_TIMEOUT) se encarregará de resetar.
-        #if !TEST_LOCAL_ONLY
-        currentState = IDLE;
-        debugPrint("[STATE] SAW_A → IDLE (sem sequência)");
-        #endif
       }
       break;
 
@@ -303,13 +289,6 @@ int detectarMovimento() {
         currentState = WAIT_CLEAR;
         lastEventTime = now;
         debugPrint("[EVENT] SAÍDA detectada! (B → A)");
-      } else if (!sensorA && !sensorB) {
-        // Para sensores fisicamente espaçados no teste local, não limpamos imediatamente.
-        // O timeout de sequência (SEQUENCE_TIMEOUT) se encarregará de resetar.
-        #if !TEST_LOCAL_ONLY
-        currentState = IDLE;
-        debugPrint("[STATE] SAW_B → IDLE (sem sequência)");
-        #endif
       }
       break;
 

@@ -18,7 +18,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" className={`${inter.variable} h-full`} suppressHydrationWarning>
       <head>
-        {/* Script para evitar flash de tema incorreto */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
